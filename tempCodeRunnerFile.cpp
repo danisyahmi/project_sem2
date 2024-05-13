@@ -8,29 +8,17 @@ using namespace std;
 
 const int ARR_SIZE = 10;
 const int MENU_SIZE = 7;
-
 void menu();
 void receiveOrder(int customerCount, int countOrder[ARR_SIZE], int tableNumber[ARR_SIZE], string customer[ARR_SIZE], string order[ARR_SIZE], int quantity[ARR_SIZE]);
 void calculationTotalPrice(int &customerCount, int countOrder[ARR_SIZE], string order[ARR_SIZE], int quantity[ARR_SIZE], double totalPrice[ARR_SIZE]);
 void calculateRevenue(int customerCount, int countOrder[ARR_SIZE], int tableNumber[ARR_SIZE], string customer[ARR_SIZE], string order[ARR_SIZE], int quantity[ARR_SIZE]);
 
-struct CUSTOMER{
-    string name;
-    int tableNumber;
-    string order[ARR_SIZE];
-    int quantity[ARR_SIZE];
-    double totalPayment;
-};
-
-CUSTOMER customerr[ARR_SIZE];
-
 int main()
 {
     int userChoice, customerCount = 0, countOrder[ARR_SIZE] = {0}, tableNumber[ARR_SIZE], quantity[ARR_SIZE];
     double totalPrice[ARR_SIZE];
-    string customer[ARR_SIZE], order[ARR_SIZE];
-    //string orderID[MENU_SIZE] = {"D100", "D101", "D102", "D103", "D104", "D105", "D106"};
-
+    string customer[ARR_SIZE];
+    string order[ARR_SIZE];
 
     while (userChoice != 3)
     {
@@ -74,27 +62,11 @@ int main()
 void calculateRevenue(int customerCount, int countOrder[ARR_SIZE], int tableNumber[ARR_SIZE], string customer[ARR_SIZE], string order[ARR_SIZE], int quantity[ARR_SIZE])
 {
     int totalRevenue[customerCount][MENU_SIZE] = {0};
-    string orderID[MENU_SIZE] = {"D100", "D101", "D102", "D103", "D104", "D105", "D106"};
-
     for (int r = 0; r < customerCount; r++)
     {
-        for (int c = 0; c < countOrder[r]; c++)
+        for (int c = 0; c < MENU_SIZE; c++)
         {
-            int ID = 0;
-        // please kemaskan loop dibawah ini ya dani
-        while (ID < MENU_SIZE)
-        {
-            int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(customerr[customerCount].order[c]);
-            char charOrderID[IDlenght], charOrder[orderLenght];
-            strcpy(charOrderID, orderID[ID].c_str());
-            strcpy(charOrder, order[c].c_str());
-
-            if (strcmp(charOrder, charOrderID) == 0)
-            {
-                totalRevenue[r][c] = customerr[customerCount].quantity[c];
-            }
-            ID++;
-        }
+            totalRevenue[r][c] = totalRevenue[r][c] + quantity[c];
         }
     }
 
@@ -102,7 +74,7 @@ void calculateRevenue(int customerCount, int countOrder[ARR_SIZE], int tableNumb
     {
         for (int c = 0; c < MENU_SIZE; c++)
         {
-            cout << totalRevenue[r][c]<< '\t';
+            cout << totalRevenue[r][c];
         }
         cout << endl;
     }
@@ -112,9 +84,9 @@ void calculateRevenue(int customerCount, int countOrder[ARR_SIZE], int tableNumb
 
 void calculationTotalPrice(int &customerCount, int countOrder[ARR_SIZE], string order[ARR_SIZE], int quantity[ARR_SIZE], double totalPrice[ARR_SIZE])
 {
-    customerr[customerCount].totalPayment = 0;
     string orderID[MENU_SIZE] = {"D100", "D101", "D102", "D103", "D104", "D105", "D106"};
     double priceList[MENU_SIZE] = {4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00};
+    totalPrice[ARR_SIZE] = {0};
 
     for (int k = 0; k < countOrder[customerCount]; k++)
     {
@@ -122,21 +94,21 @@ void calculationTotalPrice(int &customerCount, int countOrder[ARR_SIZE], string 
         // please kemaskan loop dibawah ini ya dani
         while (ID < MENU_SIZE)
         {
-            int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(customerr[customerCount].order[k]);
+            int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(order[k]);
             char charOrderID[IDlenght], charOrder[orderLenght];
             strcpy(charOrderID, orderID[ID].c_str());
-            strcpy(charOrder, customerr[customerCount].order[k].c_str());
+            strcpy(charOrder, order[k].c_str());
 
             if (strcmp(charOrder, charOrderID) == 0)
             {
-                customerr[customerCount].totalPayment = customerr[customerCount].totalPayment + (customerr[customerCount].quantity[k] * priceList[ID]);
+                totalPrice[customerCount] = totalPrice[customerCount] + (quantity[k] * priceList[ID]);
                 break;
             }
             ID++;
         }
     }
     cout << endl
-         << "the total price is " << customerr[customerCount].totalPayment << endl;
+         << "the total price is " << totalPrice[customerCount] << endl;
     customerCount++; // this increment should be done after all processes for one customer are done
 }
 
@@ -150,10 +122,10 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], int tableNumber[A
     cout << "\n\n\t\t NEW CUSTOMER\n\n";
     cout << "Please enter customer name : ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    getline(cin, customerr[customerCount].name);
+    getline(cin, customer[customerCount]);
 
     cout << "Please enter customer table number (1 -> 40) : ";
-    cin >> customerr[customerCount].tableNumber;
+    cin >> tableNumber[customerCount];
 
     for (int j = 0; j < ARR_SIZE; j++)
     {
@@ -161,10 +133,10 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], int tableNumber[A
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         menu();
         cout << "please enter food code: ";
-        getline(cin, customerr[customerCount].order[j]);
+        getline(cin, order[j]);
 
         cout << "please enter quantity: ";
-        cin >> customerr[customerCount].quantity[j];
+        cin >> quantity[j];
 
         cout << "do you want to add on ? (y/n): ";
         cin >> choice;
