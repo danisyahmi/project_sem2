@@ -10,9 +10,11 @@ const int ARR_SIZE = 10;
 const int MENU_SIZE = 7;
 
 void menu();
-void receiveOrder(int customerCount, int countOrder[ARR_SIZE]);
+void receiveOrder(int customerCount, int countOrder[ARR_SIZE], string orderID[MENU_SIZE]);
 void calculationTotalPrice(int &customerCount, int countOrder[ARR_SIZE], string orderID[MENU_SIZE]);
 void calculateRevenue(string orderID[MENU_SIZE], int customerCount, int countOrder[ARR_SIZE]);
+void errorMessage();
+bool check(string orderID[MENU_SIZE], int customerCount, const string &data);
 
 struct CUSTOMER
 {
@@ -23,7 +25,7 @@ struct CUSTOMER
     double totalPayment;
 };
 
-CUSTOMER customerr[ARR_SIZE];
+CUSTOMER customer[ARR_SIZE];
 
 int main()
 {
@@ -55,7 +57,7 @@ int main()
         switch (userChoice)
         {
         case 1: // if user input 1 -
-            receiveOrder(customerCount, countOrder);
+            receiveOrder(customerCount, countOrder, orderID);
             calculationTotalPrice(customerCount, countOrder, orderID);
             break;
         case 2: // user input 2 -
@@ -70,7 +72,6 @@ int main()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void calculateRevenue(string orderID[MENU_SIZE], int customerCount, int countOrder[ARR_SIZE])
 {
     int totalRevenue[customerCount][MENU_SIZE] = {0};
@@ -82,17 +83,17 @@ void calculateRevenue(string orderID[MENU_SIZE], int customerCount, int countOrd
         {
             int ID = 0;
             // please kemaskan loop dibawah ini ya dani
-            cout << "apa pun tak masuk \n";
             while (ID < MENU_SIZE)
             {
-                int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(customerr[customerCount].order[c]);
+                int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(customer[customerCount].order[c]);
                 char charOrderID[IDlenght], charOrder[orderLenght];
                 strcpy(charOrderID, orderID[ID].c_str());
-                strcpy(charOrder, customerr[r].order[c].c_str());
-                cout << charOrder << '\t' << charOrderID << endl;
+                strcpy(charOrder, customer[r].order[c].c_str());
+                
                 if (strcmp(charOrder, charOrderID) == 0)
                 {
-                    totalRevenue[r][ID] += customerr[r].quantity[c];                }
+                    totalRevenue[r][ID] += customer[r].quantity[c];
+                }
                 ID++;
             }
         }
@@ -109,10 +110,9 @@ void calculateRevenue(string orderID[MENU_SIZE], int customerCount, int countOrd
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void calculationTotalPrice(int &customerCount, int countOrder[ARR_SIZE], string orderID[MENU_SIZE])
 {
-    customerr[customerCount].totalPayment = 0;
+    customer[customerCount].totalPayment = 0;
     double priceList[MENU_SIZE] = {4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00};
 
     for (int k = 0; k < countOrder[customerCount]; k++)
@@ -121,49 +121,63 @@ void calculationTotalPrice(int &customerCount, int countOrder[ARR_SIZE], string 
         // please kemaskan loop dibawah ini ya dani
         while (ID < MENU_SIZE)
         {
-            int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(customerr[customerCount].order[k]);
+            int IDlenght = sizeof(orderID[ID]), orderLenght = sizeof(customer[customerCount].order[k]);
             char charOrderID[IDlenght], charOrder[orderLenght];
             strcpy(charOrderID, orderID[ID].c_str());
-            strcpy(charOrder, customerr[customerCount].order[k].c_str());
+            strcpy(charOrder, customer[customerCount].order[k].c_str());
 
             if (strcmp(charOrder, charOrderID) == 0)
             {
-                customerr[customerCount].totalPayment = customerr[customerCount].totalPayment + (customerr[customerCount].quantity[k] * priceList[ID]);
+                customer[customerCount].totalPayment = customer[customerCount].totalPayment + (customer[customerCount].quantity[k] * priceList[ID]);
                 break;
             }
             ID++;
         }
     }
     cout << endl
-         << "the total price is " << customerr[customerCount].totalPayment << endl;
+         << "the total price is " << customer[customerCount].totalPayment << endl;
     customerCount++; // this increment should be done after all processes for one customer are done
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 // Function focusing on getting data for each customer input for result calculation
-void receiveOrder(int customerCount, int countOrder[ARR_SIZE])
+void receiveOrder(int customerCount, int countOrder[ARR_SIZE], string orderID[MENU_SIZE])
 {
     int paymentMethod;
     char choice;
+    bool input = false;
 
     cout << "\n\n\t\t NEW CUSTOMER\n\n";
     cout << "Please enter customer name : ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    getline(cin, customerr[customerCount].name);
+    getline(cin, customer[customerCount].name);
 
     cout << "Please enter customer table number (1 -> 40) : ";
-    cin >> customerr[customerCount].tableNumber;
+    cin >> customer[customerCount].tableNumber;
 
     for (int j = 0; j < ARR_SIZE; j++)
     {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         menu();
+       
         cout << "please enter food code: ";
-        getline(cin, customerr[customerCount].order[j]);
+        getline(cin, customer[customerCount].order[j]);    
+        input = check(orderID, customerCount, customer[customerCount].order[j]);
+        while(input == false){
+            errorMessage();
+            getline(cin, customer[customerCount].order[j]);
+            input = check(orderID, customerCount, customer[customerCount].order[j]);
+        }
+
 
         cout << "please enter quantity: ";
-        cin >> customerr[customerCount].quantity[j];
+        cin >> customer[customerCount].quantity[j];
+        while (cin.fail())
+        {
+            errorMessage();
+            cin >> customer[customerCount].quantity[j];
+        }
 
         cout << "do you want to add on ? (y/n): ";
         cin >> choice;
@@ -190,4 +204,26 @@ void menu()
     cout << left << setw(10) << "D105" << setw(20) << "Macchiato" << setw(15) << fixed << setprecision(2) << 9.00 << endl;
     cout << left << setw(10) << "D106" << setw(20) << "Chocolate Milkshake " << setw(15) << fixed << setprecision(2) << 10.00 << endl
          << endl;
+}
+
+void errorMessage()
+{
+    cin.clear();                                         // clearing non wanted user input -
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // ignore input up to 1000 until found '\n' -
+    cout << "\nWrong input..... please try again \n";
+}
+
+bool check(string orderID[MENU_SIZE], int customerCount, const string &data)
+{
+    int k = 0;
+    while (k < MENU_SIZE)
+    {
+        if (data == orderID[k])
+        {
+            return true;
+            break;
+        }
+        k++;
+    }
+    return false;
 }
