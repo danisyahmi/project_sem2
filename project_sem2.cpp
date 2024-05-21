@@ -2,6 +2,7 @@
 #include <iomanip>
 #include <limits> // (numeric_limit<streamsize>::max(), '\n')
 #include <cstring>
+#include <fstream>
 
 using namespace std;
 
@@ -13,8 +14,8 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
 void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
 void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE]);
 bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order); // const * is a constant pointer parameter. allows for read-only access 
-void printReceipt(int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE]);
-void choosePayment(int customerCount);
+void printReceipt(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE]);
+int choosePayment(double& cashReceive, int customerCount);
 
 struct CUSTOMER
 {
@@ -29,10 +30,10 @@ CUSTOMER customer[ARR_SIZE];
 
 int main()
 {
-    int userChoice, customerCount = 0, countOrder[ARR_SIZE] = {0};
+    int userChoice, customerCount = 0, countOrder[ARR_SIZE] = {0}, paymentMethod;
     char orderID[MENU_SIZE][6] = {"D100", "D101", "D102", "D103", "D104", "D105", "D106"};
     char menuList[MENU_SIZE][20] = {"Black Coffe","Espresso","Latte","Americano","Cappuchino","Macchiato","Chocolate Milkshake"};
-    double priceList[MENU_SIZE] = {4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00};
+    double priceList[MENU_SIZE] = {4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00}, cashReceive;
 
     while (userChoice != 3)
     {
@@ -59,8 +60,8 @@ int main()
         case 1: // if user input 1 -
             receiveOrder(customerCount, countOrder, orderID);
             calculationTotalPrice(customerCount, priceList, countOrder, orderID);
-            printReceipt(customerCount, menuList, orderID, countOrder, priceList);
-            choosePayment(customerCount);
+            paymentMethod = choosePayment(cashReceive, customerCount);
+            printReceipt(cashReceive, paymentMethod, customerCount, menuList, orderID, countOrder, priceList);
             customerCount++; // this increment should be done after all processes for one customer are done
             break;
         case 2: // user input 2 -
@@ -132,8 +133,8 @@ void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int co
             ID++;
         }
     }
-    cout << endl
-         << "the total price is " << customer[customerCount].totalPayment << endl;
+    cout << endl << endl
+         << "TOTAL PRICE : " << customer[customerCount].totalPayment << endl << endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -221,9 +222,8 @@ bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order)
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void printReceipt(int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE])
+void printReceipt(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE])
 {
-    int idUsed[ARR_SIZE];
     int i = 0;
     cout << endl << "-----------------------------------------" << endl;
     cout << setw(20) << right <<"RECEIPT";
@@ -241,14 +241,43 @@ void printReceipt(int customerCount, char menuList[MENU_SIZE][20], char orderID[
     }
     cout << endl << "-----------------------------------------" << endl;
     cout << setw(31) << left << "TOTAL :" << setw(10) << right << fixed << setprecision(2) << customer[customerCount].totalPayment <<endl;
+    
+    switch (paymentMethod)
+	{
+	case 1:
+		cout << endl
+			 << setw(31) << left << "PAYMENT METHOD :" << right << setw(10) << "E Wallet" << endl
+			 << endl;
+		cout << setw(31) << left << "PAID (RM): " << right << setw(10) << fixed << setprecision(2) << customer[customerCount].totalPayment << endl;
+		cout << setw(31) << left << "CHANGE (RM) : " << right << setw(10) << fixed << setprecision(2) << 0.00 << endl
+			 << endl;
+		break;
+	case 2:
+		cout << endl
+			 << setw(31) << left << "PAYMENT METHOD :" << right << setw(10) << "Online Banking" << endl
+			 << endl;
+		cout << setw(31) << left << "PAID (RM): " << right << setw(10) << fixed << setprecision(2) << customer[customerCount].totalPayment << endl;
+		cout << setw(31) << left << "CHANGE (RM) : " << right << setw(10) << fixed << setprecision(2) << 0.00 << endl
+			 << endl;
+		break;
+	case 3:
+		// if cash input are valid
+		cout << endl
+			 << setw(31) << left << "PAYMENT METHOD :" << right << setw(10) << "Cash" << endl
+			 << endl;
+		cout << setw(31) << left << "PAID (RM) : " << right << setw(10) << fixed << setprecision(2) << cashReceive << endl;
+		cout << setw(31) << left << "CHANGE (RM) : " << right << setw(10) << fixed << setprecision(2) << cashReceive - customer[customerCount].totalPayment << endl
+			 << endl;
+		break;
+	}
     cout << "-----------------------------------------" << endl << endl;
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void choosePayment(int customerCount)
+int choosePayment(double& cashReceive, int customerCount)
 {
     int paymentMethod;
-    double cashReceive, cashBalance;
+    double cashBalance;
     cout << "PAYMENT METHOD" << endl;
 	cout << "1) E Wallet" << endl;
 	cout << "2) Online Banking " << endl;
@@ -283,35 +312,6 @@ void choosePayment(int customerCount)
 	{
 		cashReceive = 0.0;
 	}
-    switch (paymentMethod)
-	{
-	case 1:
-		cout << endl
-			 << setw(31) << left << "PAYMENT METHOD :" << right << setw(33) << "E Wallet" << endl
-			 << endl
-			 << endl;
-		cout << "PAID (RM): " << right << setw(38) << fixed << setprecision(2) << customer[customerCount].totalPayment << endl;
-		cout << "CHANGE (RM) : " << right << setw(35) << fixed << setprecision(2) << 0.00 << endl
-			 << endl;
-		break;
-	case 2:
-		cout << endl
-			 << setw(31) << left << "PAYMENT METHOD :" << right << setw(33) << "Online Banking" << endl
-			 << endl
-			 << endl;
-		cout << setw(31) << left << "PAID (RM): " << right << setw(38) << fixed << setprecision(2) << customer[customerCount].totalPayment << endl;
-		cout << setw(31) << left << "CHANGE (RM) : " << right << setw(35) << fixed << setprecision(2) << 0.00 << endl
-			 << endl;
-		break;
-	case 3:
-		// if cash input are valid
-		cout << endl
-			 << setw(31) << left << "PAYMENT METHOD :" << right << setw(33) << "Cash" << endl
-			 << endl
-			 << endl;
-		cout << setw(31) << left << "PAID (RM) : " << right << setw(38) << fixed << setprecision(2) << cashReceive << endl;
-		cout << setw(31) << left << "CHANGE (RM) : " << right << setw(35) << fixed << setprecision(2) << cashReceive - customer[customerCount].totalPayment << endl
-			 << endl;
-		break;
-	}
+
+    return paymentMethod;
 }
