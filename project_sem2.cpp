@@ -1,3 +1,4 @@
+// include filestream output for print reciept 
 #include <iostream>
 #include <iomanip>
 #include <limits> // (numeric_limit<streamsize>::max(), '\n')
@@ -21,7 +22,7 @@ struct CUSTOMER
 {
     char name[50];
     int tableNumber;
-    char order[6][ARR_SIZE];
+    char order[ARR_SIZE][6];
     int quantity[ARR_SIZE];
     double totalPayment;
 };
@@ -138,7 +139,6 @@ void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int co
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-
 void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6])
 {
     int paymentMethod;
@@ -224,6 +224,7 @@ bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order)
 //------------------------------------------------------------------------------------------------------------------------------------------------------
 void printReceipt(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE])
 {
+    // include table number on receipt
     int i = 0;
     cout << endl << "-----------------------------------------" << endl;
     cout << setw(20) << right <<"RECEIPT";
