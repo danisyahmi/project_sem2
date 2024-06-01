@@ -88,11 +88,9 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
             while (ID < MENU_SIZE)
             {
                 int IDlenght = strlen(orderID[ID]), orderLenght = strlen(customer[customerCount].order[c]);
-                char charOrderID[IDlenght], charOrder[orderLenght];
-                strcpy(charOrderID, orderID[ID]);
-                strcpy(charOrder, customer[r].order[c]);
-
-                if (strcmp(charOrder, charOrderID) == 0)
+                char charOrderID[IDlenght], customerID[orderLenght];
+                strcpy(customerID, customer[r].order[c]);
+                if (strcmp(orderID[ID], customerID) == 0)
                 {
                     totalRevenue[r][ID] += customer[r].quantity[c];
                 }
@@ -100,7 +98,7 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
             }
         }
     }
-
+    // printing the total revenue
     for (int r = 0; r < customerCount; r++)
     {
         for (int c = 0; c < MENU_SIZE; c++)
