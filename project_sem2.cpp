@@ -13,7 +13,7 @@ const int MENU_SIZE = 7;
 void menu();
 void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
 void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
-void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE]);
+void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE], int totalOrderID[MENU_SIZE]);
 bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order); // const * is a constant pointer parameter. allows for read-only access 
 void printReceipt(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE]);
 int choosePayment(double& cashReceive, int customerCount);
@@ -31,7 +31,7 @@ CUSTOMER customer[ARR_SIZE];
 
 int main()
 {
-    int userChoice, customerCount = 0, countOrder[ARR_SIZE] = {0}, paymentMethod;
+    int userChoice, customerCount = 0, countOrder[ARR_SIZE] = {0}, totalOrderID[MENU_SIZE] = {0}, paymentMethod;
     char orderID[MENU_SIZE][6] = {"D100", "D101", "D102", "D103", "D104", "D105", "D106"};
     char menuList[MENU_SIZE][20] = {"Black Coffe","Espresso","Latte","Americano","Cappuchino","Macchiato","Chocolate Milkshake"};
     double priceList[MENU_SIZE] = {4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00}, cashReceive;
@@ -67,7 +67,7 @@ int main()
             break;
         case 2: // user input 2 -
             // program go to printTotalRevenue() function -
-            calculateRevenue(orderID, customerCount, countOrder);
+            calculateRevenue(orderID, customerCount, countOrder, totalOrderID);
             break;
         case 3: // user input 3 -
             break;
@@ -77,7 +77,7 @@ int main()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE])
+void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE], int totalOrderID[MENU_SIZE])
 {
     int totalRevenue[customerCount][MENU_SIZE] = {0};
     for (int r = 0; r < customerCount; r++)
@@ -90,6 +90,7 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
                 int IDlenght = strlen(orderID[ID]), orderLenght = strlen(customer[customerCount].order[c]);
                 char charOrderID[IDlenght], customerID[orderLenght];
                 strcpy(customerID, customer[r].order[c]);
+                // problems with calculating total revenue of each order, please help me future dani
                 if (strcmp(orderID[ID], customerID) == 0)
                 {
                     totalRevenue[r][ID] += customer[r].quantity[c];
@@ -98,15 +99,28 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
             }
         }
     }
+
+    cout << endl << endl; 
     // printing the total revenue
+    cout << "SALES REVENUE" << endl;
+    cout << setw(10) << left << "NAME" << setw(5) << "D100" << setw(5) << "D101" << setw(5)<< "D102" << setw(5)<< "D103" << setw(5)<< "D104" << setw(5) << "D105" << setw(5)<< "D106" << setw(5) << endl;
+    cout << endl;
     for (int r = 0; r < customerCount; r++)
     {
+        cout << setw(10) << left << customer[r].name;
         for (int c = 0; c < MENU_SIZE; c++)
         {
-            cout << totalRevenue[r][c] << '\t';
+            cout << setw(5) << totalRevenue[r][c];
         }
         cout << endl;
     }
+    cout << "---------------------------------------------" << endl;
+    cout << setw(10) << "TOTAL :";
+    for(int h = 0; h < MENU_SIZE; h++){
+        cout << setw(5) << totalOrderID[h];
+    }
+    cout << endl << "---------------------------------------------" << endl << endl;
+
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -150,7 +164,9 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
 
     cout << "Please enter customer table number (1 -> 40) : ";
     cin >> customer[customerCount].tableNumber;
-    while(customer[customerCount].tableNumber < 1 || customer[customerCount].tableNumber > 40 ){
+    while(customer[customerCount].tableNumber < 1 || customer[customerCount].tableNumber > 40 || cin.fail()){
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << "Please enter customer table number (1 -> 40) : ";
         cin >> customer[customerCount].tableNumber;
     }
@@ -172,6 +188,7 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
         cin >> customer[customerCount].quantity[j];
         while (cin.fail())
         {
+            cin.clear();
             cout << "wrong input please try again : ";
             cin >> customer[customerCount].quantity[j];
         }
@@ -179,7 +196,7 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
         cout << "do you want to add on ? (y/n): ";
         cin >> choice;
         countOrder[customerCount]++;
-        if (choice == 'n')
+        if (choice == 'n' || choice == 'N')
         {
             break;
         }
