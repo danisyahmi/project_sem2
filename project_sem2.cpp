@@ -14,7 +14,7 @@ void menu();
 void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
 void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
 void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE], int totalOrderID[MENU_SIZE]);
-bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order); // const * is a constant pointer parameter. allows for read-only access
+bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order); // const * is a constant pointer parameter. allows for read-only access and only pointing on that specific member
 void printReceipt(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE]);
 int choosePayment(double &cashReceive, int customerCount);
 void printReceiptFileOutput(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE]);
@@ -73,7 +73,11 @@ int main()
                 cout << "Wrong input, please try again (Y/N) : ";
                 cin >> printReceiptChoice;
             }
-            printReceiptChoice == 'y' && printReceiptChoice == 'Y' ? printReceiptFileOutput(cashReceive, paymentMethod, customerCount, menuList, orderID, countOrder, priceList) : void();
+            if(printReceiptChoice == 'y' && printReceiptChoice == 'Y'){
+                printReceiptFileOutput(cashReceive, paymentMethod, customerCount, menuList, orderID, countOrder, priceList);
+            }else{
+                cout << "Receipt are not printed" << endl;
+            }
             customerCount++; // this increment should be done after all processes for one customer are done
             break;
         case 2: // user input 2 -
