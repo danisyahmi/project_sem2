@@ -1,0 +1,17 @@
+hello world
+-----------------------------------------
+RECEIPT                     TABLE NO : 12
+-----------------------------------------
+ITEM DESCRIPTION         QUANTITY   PRICE
+D100 Black Coffe             2       4.00
+
+-----------------------------------------
+TOTAL :                              8.00
+
+PAYMENT METHOD :                 E Wallet
+
+PAID (RM):                           8.00
+CHANGE (RM) :                        0.00
+
+-----------------------------------------
+
