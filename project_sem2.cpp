@@ -48,7 +48,6 @@ int main()
              << "3. Exit" << endl
              << "Please enter your choice : ";
         cin >> userChoice;
-
         while (userChoice != 1 && userChoice != 2 && userChoice != 3)
         {
             cin.clear(); // clearing non wanted user input
@@ -70,10 +69,10 @@ int main()
             while(printReceiptChoice != 'N' && printReceiptChoice != 'n' && printReceiptChoice != 'Y' && printReceiptChoice != 'y'){
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cout << "Wrong input, please try again (Y/N) : ";
+                cout << "\tWrong input! Would you like to print the receipt? (Y/N) : ";
                 cin >> printReceiptChoice;
             }
-            if(printReceiptChoice == 'y' && printReceiptChoice == 'Y'){
+            if(printReceiptChoice == 'y' || printReceiptChoice == 'Y'){
                 printReceiptFileOutput(cashReceive, paymentMethod, customerCount, menuList, orderID, countOrder, priceList);
             }else{
                 cout << "Receipt are not printed" << endl;
@@ -188,30 +187,29 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
         }
     }
 
-
     cout << endl
          << endl;
     // printing the total revenue
-    cout << "SALES REVENUE" << endl;
-    cout << setw(10) << left << "NAME" << setw(5) << "D100" << setw(5) << "D101" << setw(5) << "D102" << setw(5) << "D103" << setw(5) << "D104" << setw(5) << "D105" << setw(5) << "D106" << setw(5) << endl;
-    cout << endl;
+    cout << "SALES REVENUE" << endl << endl;
+    cout << setw(9) << left << "NAME" << '|' << setw(6) << "TABLE" << '|' << setw(5) << "D100" << setw(5) << "D101" << setw(5) << "D102" << setw(5) << "D103" << setw(5) << "D104" << setw(5) << "D105" << setw(5) << "D106" << setw(5) << endl;
+    
     for (int r = 0; r < customerCount; r++)
     {
-        cout << setw(10) << left << customer[r].name;
+        cout << "---------------------------------------------------" << endl;
+        cout << setw(9) << left << customer[r].name << '|' << setw(6) << left << customer[r].tableNumber << '|';
         for (int c = 0; c < MENU_SIZE; c++)
         {
             cout << setw(5) << totalRevenue[r][c];
         }
-        cout << endl;
     }
-    cout << "---------------------------------------------" << endl;
-    cout << setw(10) << "TOTAL :";
+    cout << endl << "---------------------------------------------------" << endl;
+    cout << setw(16) << left << "TOTAL (UNIT) :" << '|';
     for (int h = 0; h < MENU_SIZE; h++)
     {
         cout << setw(5) << totalOrderID[h];
     }
     cout << endl
-         << "---------------------------------------------" << endl
+         << "---------------------------------------------------" << endl
          << endl;
 }
 
@@ -262,34 +260,42 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
     {
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cout << "Please enter customer table number (1 -> 40) : ";
+        cout << "\tWrong input! Please enter customer table number (1 -> 40) : ";
         cin >> customer[customerCount].tableNumber;
     }
 
     for (int j = 0; j < ARR_SIZE; j++)
     {
         menu();
-        cout << "please enter food code: ";
+        cout << "Please enter food code: ";
         cin >> customer[customerCount].order[j];
         input = check(orderID, customerCount, customer[customerCount].order[j]);
         while (input == false)
         {
+            cin.clear();
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "\tWrong input! Please enter food code : ";
             cin >> customer[customerCount].order[j];
             input = check(orderID, customerCount, customer[customerCount].order[j]);
         }
 
-        cout << "please enter quantity: ";
+        cout << "Please enter quantity: ";
         cin >> customer[customerCount].quantity[j];
         while (cin.fail())
         {
             cin.clear();
-            cout << "wrong input please try again : ";
+            cout << "\tWrong input! Please enter quantity : ";
             cin >> customer[customerCount].quantity[j];
         }
 
-        cout << "do you want to add on ? (y/n): ";
+        cout << "Do you want to add on? (Y/N): ";
         cin >> choice;
+        while(choice != 'N' && choice != 'n' && choice != 'Y' && choice != 'y'){
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cout << "\tWrong input, Do you want to add on? (Y/N) : ";
+                cin >> choice;
+            }
         countOrder[customerCount]++;
         if (choice == 'n' || choice == 'N')
         {
@@ -410,18 +416,27 @@ int choosePayment(double &cashReceive, int customerCount)
         cin.clear(); // clearing non wanted user input
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cout << endl
-             << "Wrong input, please try again." << endl;
-        cout << "Please enter payment method : ";
+             << "\t!Wrong input, Please enter payment method : ";
         cin >> paymentMethod;
     }
     if (paymentMethod == 3)
     {
         cout << "Please Enter the amount of cash : ";
         cin >> cashReceive;
+        while(cin.fail()){
+             cin.clear();
+            cout << "\tWrong input! Please enter the amount of cash : ";
+            cin >> cashReceive;
+        }
         while (cashReceive < customer[customerCount].totalPayment)
         {
             cout << "Your money is insufficient! Please enter RM " << customer[customerCount].totalPayment - cashReceive << " more : ";
             cin >> cashBalance;
+            while(cin.fail()){
+            cin.clear();
+            cout << "\tWrong input! Please enter RM " << customer[customerCount].totalPayment - cashReceive << " more : ";
+            cin >> cashReceive;
+        }
             cashReceive = cashReceive + cashBalance;
         }
     }
