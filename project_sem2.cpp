@@ -1,4 +1,10 @@
-// include filestream output for print reciept
+// GROUP MEMBER :
+// MOHAMED DANI SYAHMI BIN ABDUL SHUKOR (D032310401)
+// MUHAMMAD NAFIZ BIN MUHAMMAD YAZID (D032310219)
+// MIMI NUR IMAN BINTI RUDUIAN @ RIDZUAN (D032310371)
+// MIMI JULIANA BINTI ZAKARIA ANSORI (D032310067)
+
+// include filestream output for print receipt
 #include <iostream>
 #include <iomanip>
 #include <limits> // (numeric_limit<streamsize>::max(), '\n')
@@ -7,9 +13,11 @@
 
 using namespace std;
 
-const int ARR_SIZE = 10;
-const int MENU_SIZE = 7;
+// Constant Variables
+const int ARR_SIZE = 100; // Size for customer count related
+const int MENU_SIZE = 7; // Size for MENU
 
+// Function prototype 
 void menu();
 void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
 void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6]);
@@ -19,6 +27,7 @@ void printReceipt(double cashReceive, int paymentMethod, int customerCount, char
 int choosePayment(double &cashReceive, int customerCount);
 void printReceiptFileOutput(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE]);
 
+// data structure for CUSTOMER
 struct CUSTOMER
 {
     char name[50];
@@ -28,16 +37,19 @@ struct CUSTOMER
     double totalPayment;
 };
 
-CUSTOMER customer[ARR_SIZE];
+CUSTOMER customer[ARR_SIZE]; // Declaring that customer will be an array of ARR_SIZE 
 
-int main()
+// MIMI NUR IMAN BINTI RUDUIAN @ RIDZUAN (D032310371) & MUHAMMAD NAFIZ BIN MUHAMMAD YAZID (D032310219)
+int main() 
 {
+    // Declaring local variables
     int userChoice, customerCount = 0, countOrder[ARR_SIZE] = {0}, totalOrderID[MENU_SIZE] = {0}, paymentMethod;
     char orderID[MENU_SIZE][6] = {"D100", "D101", "D102", "D103", "D104", "D105", "D106"};
     char menuList[MENU_SIZE][20] = {"Black Coffe", "Espresso", "Latte", "Americano", "Cappuchino", "Macchiato", "Chocolate Milkshake"};
     char printReceiptChoice;
     double priceList[MENU_SIZE] = {4.00, 5.00, 6.00, 7.00, 8.00, 9.00, 10.00}, cashReceive;
 
+    // Looping for input validation
     while (userChoice != 3)
     {
         cout << endl
@@ -51,15 +63,15 @@ int main()
         while (userChoice != 1 && userChoice != 2 && userChoice != 3)
         {
             cin.clear(); // clearing non wanted user input
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // ignoreing everything inside the buffer until '/n'
             cout << endl
                  << "Invalid Choice! Please try again." << endl;
-            cin >> userChoice;
+            cin >> userChoice; // entering the input again
         }
 
-        switch (userChoice)
+        switch (userChoice) // User choice to navigate around the program
         {
-        case 1: // if user input 1 -
+        case 1: // if user input 1 
             receiveOrder(customerCount, countOrder, orderID);
             calculationTotalPrice(customerCount, priceList, countOrder, orderID);
             paymentMethod = choosePayment(cashReceive, customerCount);
@@ -79,11 +91,14 @@ int main()
             }
             customerCount++; // this increment should be done after all processes for one customer are done
             break;
+
         case 2: // user input 2 -
-            // program go to printTotalRevenue() function -
+            // program go to printTotalRevenue() function
             calculateRevenue(orderID, customerCount, countOrder, totalOrderID);
             break;
-        case 3: // user input 3 -
+
+        case 3: // user input 3 
+            // program will stop the looping and exiting the program
             break;
         }
     }
@@ -91,12 +106,14 @@ int main()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MOHAMED DANI SYAHMI BIN ABDUL SHUKOR (D032310401) & MIMI JULIANA BINTI ZAKARIA ANSORI (D032310067)
 // this function will display an output on "receipt.txt", as an act of printing receipt 
 void printReceiptFileOutput(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE])
 {
-    ofstream fileout;
-    fileout.open("receipt.txt");
+    ofstream fileout; // declaring varible for file output 
+    fileout.open("receipt.txt"); // opening the "receipt.txt" file
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+//  Printing all the data from parameter list
     fileout << endl
          << "-----------------------------------------" << endl;
     fileout << setw(21) << left << "RECEIPT";
@@ -151,26 +168,28 @@ void printReceiptFileOutput(double cashReceive, int paymentMethod, int customerC
     fileout << "-----------------------------------------" << endl
          << endl;
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-    fileout.close();
-    cout << "Receipt printed" << endl;
+    fileout.close(); // Closing the "receipt.txt" file
+    cout << "Receipt printed" << endl; // this will indicate that printing output on "receipt.txt" is successfull
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MOHAMED DANI SYAHMI BIN ABDUL SHUKOR (D032310401) & MIMI JULIANA BINTI ZAKARIA ANSORI (D032310067)
 void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOrder[ARR_SIZE], int totalOrderID[MENU_SIZE])
 {
-    int totalRevenue[customerCount][MENU_SIZE] = {0};
+    int totalRevenue[customerCount][MENU_SIZE] = {0}; // initalize the value for totalRevenue 2D array to 0
+    // going through each row 
     for (int r = 0; r < customerCount; r++)
     {
+        // going through each column
         for (int c = 0; c < countOrder[r]; c++)
         {
-            int ID = 0;
+            int ID = 0; // initialze ID to zero to check if any of the value inserted matches with any id in the menu
             while (ID < MENU_SIZE)
-            {
-                int IDlenght = strlen(orderID[ID]), orderLenght = strlen(customer[customerCount].order[c]);
-                char charOrderID[IDlenght], customerID[orderLenght];
-                strcpy(customerID, customer[r].order[c]);
-                // problems with calculating total revenue of each order, please help me future
-                if (strcmp(orderID[ID], customerID) == 0)
+            {  
+                int IDlenght = strlen(orderID[ID]), orderLenght = strlen(customer[customerCount].order[c]); // getting the lenght for inserted data and the id from menu
+                char charOrderID[IDlenght], customerID[orderLenght]; 
+                strcpy(customerID, customer[r].order[c]); // copy the value of customer[r].order[c] into customerID 
+                if (strcmp(orderID[ID], customerID) == 0) // if the value inserted matches with id in the menu
                 {
                     totalRevenue[r][ID] += customer[r].quantity[c];
                 }
@@ -178,6 +197,7 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
             }
         }
     }
+    // calculating the total order for each id in the menu
     for (int i = 0; i < MENU_SIZE; i++)
     {
         totalOrderID[i] = 0;
@@ -189,6 +209,7 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
 
     cout << endl
          << endl;
+
     // printing the total revenue
     cout << "SALES REVENUE" << endl << endl;
     cout << setw(9) << left << "NAME" << '|' << setw(6) << "TABLE" << '|' << setw(5) << "D100" << setw(5) << "D101" << setw(5) << "D102" << setw(5) << "D103" << setw(5) << "D104" << setw(5) << "D105" << setw(5) << "D106" << setw(5) << endl;
@@ -214,6 +235,7 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MIMI NUR IMAN BINTI RUDUIAN @ RIDZUAN (D032310371) & MUHAMMAD NAFIZ BIN MUHAMMAD YAZID (D032310219)
 void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6])
 {
     customer[customerCount].totalPayment = 0;
@@ -243,12 +265,14 @@ void calculationTotalPrice(int customerCount, double priceList[ARR_SIZE], int co
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MOHAMED DANI SYAHMI BIN ABDUL SHUKOR (D032310401) & MIMI JULIANA BINTI ZAKARIA ANSORI (D032310067)
 void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU_SIZE][6])
 {
     int paymentMethod;
     char choice;
     bool input = false;
 
+    // getting all the inputs from users
     cout << "\n\n\t\t NEW CUSTOMER\n\n";
     cout << "Please enter customer name : ";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -256,6 +280,7 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
 
     cout << "Please enter customer table number (1 -> 40) : ";
     cin >> customer[customerCount].tableNumber;
+    // input validation 
     while (customer[customerCount].tableNumber < 1 || customer[customerCount].tableNumber > 40 || cin.fail())
     {
         cin.clear();
@@ -269,7 +294,8 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
         menu();
         cout << "Please enter food code: ";
         cin >> customer[customerCount].order[j];
-        input = check(orderID, customerCount, customer[customerCount].order[j]);
+        input = check(orderID, customerCount, customer[customerCount].order[j]); // please refer to check() function 
+        // input validation 
         while (input == false)
         {
             cin.clear();
@@ -281,7 +307,8 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
 
         cout << "Please enter quantity: ";
         cin >> customer[customerCount].quantity[j];
-        while (cin.fail())
+        // input validation 
+        while (cin.fail()) // if input is not interger
         {
             cin.clear();
             cout << "\tWrong input! Please enter quantity : ";
@@ -290,13 +317,15 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
 
         cout << "Do you want to add on? (Y/N): ";
         cin >> choice;
+        // input validation
         while(choice != 'N' && choice != 'n' && choice != 'Y' && choice != 'y'){
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 cout << "\tWrong input, Do you want to add on? (Y/N) : ";
                 cin >> choice;
             }
-        countOrder[customerCount]++;
+        countOrder[customerCount]++; // if user choose to add on, countOrder for the customer will increase
+        // if user choose not to add on, the loop to get inputs will break
         if (choice == 'n' || choice == 'N')
         {
             break;
@@ -305,8 +334,10 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MIMI JULIANA BINTI ZAKARIA ANSORI (D032310067) & MIMI NUR IMAN BINTI RUDUIAN @ RIDZUAN (D032310371)
 void menu()
 {
+    // Printing the menu list 
     cout << endl
          << "\t\t CAFE MENU \t\t" << endl
          << endl;
@@ -322,25 +353,28 @@ void menu()
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
-bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order)
+// MOHAMED DANI SYAHMI BIN ABDUL SHUKOR (D032310401)
+// this function check if user input for order ID is correct
+bool check(char orderID[MENU_SIZE][6], int customerCount, const char *order) // const char *order is refering to order id that user inserted
 {
     int k = 0;
     while (k < MENU_SIZE)
     {
         if (strcmp(order, orderID[k]) == 0)
         {
-            return true;
+            return true; // return true if the id user inserted matches the id in the menu
             break;
         }
         k++;
     }
-    return false;
+    return false;// else return false
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MIMI NUR IMAN BINTI RUDUIAN @ RIDZUAN (D032310371) & MUHAMMAD NAFIZ BIN MUHAMMAD YAZID (D032310219)
 void printReceipt(double cashReceive, int paymentMethod, int customerCount, char menuList[MENU_SIZE][20], char orderID[MENU_SIZE][6], int countOrder[ARR_SIZE], double pricelist[MENU_SIZE])
 {
-    // include table number on receipt
+    // Printing the receipt for each customer's order
     cout << endl
          << "-----------------------------------------" << endl;
     cout << setw(21) << left << "RECEIPT";
@@ -348,10 +382,12 @@ void printReceipt(double cashReceive, int paymentMethod, int customerCount, char
     cout << endl
          << "-----------------------------------------" << endl;
     cout << setw(5) << left << "ITEM" << setw(20) << "DESCRIPTION" << setw(10) << "QUANTITY" << setw(6) << right << "PRICE" << endl;
+
     for (int h = 0; h < countOrder[customerCount]; h++)
     {
         cout << setw(5) << left << customer[customerCount].order[h];
         int orderNameQuery = 0;
+        // Checking which Id that user inserted matches the id in the menu and print it 
         while (strcmp(customer[customerCount].order[h], orderID[orderNameQuery]) != 0)
         {
             orderNameQuery++;
@@ -364,6 +400,7 @@ void printReceipt(double cashReceive, int paymentMethod, int customerCount, char
          << "-----------------------------------------" << endl;
     cout << setw(31) << left << "TOTAL :" << setw(10) << right << fixed << setprecision(2) << customer[customerCount].totalPayment << endl;
 
+    // Program will print the payment method format on the receipt based on user's choice of payment method
     switch (paymentMethod)
     {
     case 1:
@@ -397,10 +434,12 @@ void printReceipt(double cashReceive, int paymentMethod, int customerCount, char
 }
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------
+// MOHAMED DANI SYAHMI BIN ABDUL SHUKOR (D032310401) & MUHAMMAD NAFIZ BIN MUHAMMAD YAZID (D032310219)
 int choosePayment(double &cashReceive, int customerCount)
 {
     int paymentMethod;
     double cashBalance;
+    // printing options for payment method
     cout << "PAYMENT METHOD" << endl;
     cout << "1) E Wallet" << endl;
     cout << "2) Online Banking " << endl;
@@ -411,6 +450,7 @@ int choosePayment(double &cashReceive, int customerCount)
          << endl;
     cout << "Please enter payment method : ";
     cin >> paymentMethod;
+    // input validation 
     while (paymentMethod != 1 && paymentMethod != 2 && paymentMethod != 3)
     {
         cin.clear(); // clearing non wanted user input
@@ -419,15 +459,17 @@ int choosePayment(double &cashReceive, int customerCount)
              << "\t!Wrong input, Please enter payment method : ";
         cin >> paymentMethod;
     }
-    if (paymentMethod == 3)
+    if (paymentMethod == 3) // option 3 is cash, which means there will be balance or not enough cash given
     {
         cout << "Please Enter the amount of cash : ";
         cin >> cashReceive;
+        // input validation
         while(cin.fail()){
              cin.clear();
             cout << "\tWrong input! Please enter the amount of cash : ";
             cin >> cashReceive;
         }
+        // the program will continue ask for cash input until the cash is enough to pay the total price of the order
         while (cashReceive < customer[customerCount].totalPayment)
         {
             cout << "Your money is insufficient! Please enter RM " << customer[customerCount].totalPayment - cashReceive << " more : ";
@@ -437,10 +479,10 @@ int choosePayment(double &cashReceive, int customerCount)
             cout << "\tWrong input! Please enter RM " << customer[customerCount].totalPayment - cashReceive << " more : ";
             cin >> cashReceive;
         }
-            cashReceive = cashReceive + cashBalance;
+            cashReceive = cashReceive + cashBalance; // total cash given 
         }
     }
-    else
+    else // if the cash given matches with the total price of the order
     {
         cashReceive = 0.0;
     }
