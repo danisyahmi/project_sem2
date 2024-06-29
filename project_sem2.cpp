@@ -212,11 +212,11 @@ void calculateRevenue(char orderID[MENU_SIZE][6], int customerCount, int countOr
 
     // printing the total revenue
     cout << "SALES REVENUE" << endl << endl;
-    cout << setw(9) << left << "NAME" << '|' << setw(6) << "TABLE" << '|' << setw(5) << "D100" << setw(5) << "D101" << setw(5) << "D102" << setw(5) << "D103" << setw(5) << "D104" << setw(5) << "D105" << setw(5) << "D106" << setw(5) << endl;
+    cout << setw(9) << left << "NAME" << '|' << setw(6) << "TABLE" << '|' << setw(5) << "D100" << setw(5) << "D101" << setw(5) << "D102" << setw(5) << "D103" << setw(5) << "D104" << setw(5) << "D105" << setw(5) << "D106" << setw(5);
     
     for (int r = 0; r < customerCount; r++)
     {
-        cout << "---------------------------------------------------" << endl;
+        cout << endl << "---------------------------------------------------" << endl;
         cout << setw(9) << left << customer[r].name << '|' << setw(6) << left << customer[r].tableNumber << '|';
         for (int c = 0; c < MENU_SIZE; c++)
         {
@@ -311,6 +311,7 @@ void receiveOrder(int customerCount, int countOrder[ARR_SIZE], char orderID[MENU
         while (cin.fail()) // if input is not interger
         {
             cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cout << "\tWrong input! Please enter quantity : ";
             cin >> customer[customerCount].quantity[j];
         }
